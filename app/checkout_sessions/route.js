@@ -7,8 +7,8 @@ const formatAmountForStripe = (amount, currency) => {
     return Math.round(amount * 100)
 }
 
-
-const params = {
+export async function POST(req) {
+  const params = {
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [
@@ -40,3 +40,4 @@ const params = {
   return NextResponse.json(checkoutSession, {
     status: 200,
   })
+}
