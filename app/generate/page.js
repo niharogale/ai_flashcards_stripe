@@ -46,6 +46,11 @@ export default function generate() {
             return
         }
 
+        if(!user || !user.id) {
+            alert('User is not signed in or user Id is not available')
+            return
+        }
+
         const batch = writeBatch(db)
         const userDocRef = doc(collection(db, 'users'), user.id)
         const docSnap = await getDoc(userDocRef)

@@ -1,9 +1,35 @@
 import getStripe from '@/utils/get-stripe';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { Container, AppBar, Toolbar, Typography, Button, Box, Grid } from '@mui/material';
+import { GSSP_NO_RETURNED_VALUE } from 'next/dist/lib/constants';
 import Head from 'next/head';
 
 export default function Home() {
+
+  const handleSubmit = async () => {
+    const checkoutSession = await fetch(`/api/checkout_session`, {
+      method: "POST",
+      headers: {
+        origin: 'http://localhost:3000'
+      },
+    })
+
+    const checkoutSessionJson = await checkoutSession.json()
+
+    if(checkoutSession.statusCode === 5000) {
+      console.error(checkoutSession.message)
+      GSSP_NO_RETURNED_VALUE
+    }
+
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id
+    })
+
+    if(error) {
+      console.error(error.message)
+    }
+  }
   return (
     <Container maxWidth="lg">
       <Head>
