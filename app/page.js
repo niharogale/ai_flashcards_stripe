@@ -1,138 +1,168 @@
-import getStripe from '@/utils/get-stripe';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import { Container, AppBar, Toolbar, Typography, Button, Box, Grid } from '@mui/material';
-import { GSSP_NO_RETURNED_VALUE } from 'next/dist/lib/constants';
-import Head from 'next/head';
+'use client'
+import Image from 'next/image'
+import getStripe from '@/utils/get-stripe'
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from '@mui/material'
+import Head from 'next/head'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+  const router = useRouter()
 
-  const handleSubmit = async () => {
-    const checkoutSession = await fetch(`/api/checkout_session`, {
-      method: "POST",
+  const handleSubmitPro = async () => {
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
       headers: {
-        origin: 'http://localhost:3000'
+        origin: 'https://localhost:3000'
       },
     })
 
     const checkoutSessionJson = await checkoutSession.json()
 
-    if(checkoutSession.statusCode === 5000) {
+    if (checkoutSession.statusCode === 500) {
       console.error(checkoutSession.message)
-      GSSP_NO_RETURNED_VALUE
+      return
     }
 
     const stripe = await getStripe()
-    const {error} = await stripe.redirectToCheckout({
-      sessionId: checkoutSessionJson.id
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
     })
 
-    if(error) {
-      console.error(error.message)
+    if (error) {
+      console.warn(error.message)
     }
   }
+
+  const handleSubmitBasic = async () => {
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
+      headers: {
+        origin: 'https://localhost:3000',
+        plan: "basic",
+      },
+    })
+
+    const checkoutSessionJson = await checkoutSession.json()
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+
+    const stripe = await getStripe()
+    const { error } = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+
+    if (error) {
+      console.warn(error.message)
+    }
+  }
+
+  const getStarted = async () => {
+    router.push('/generate')
+  }
+
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="100vw" id="home-root">
       <Head>
         <title>Flashcard SaaS</title>
         <meta name="description" content="Create flashcards from your text" />
       </Head>
-
-      <AppBar position="static">
-        <Toolbar sx={{ position: 'relative', minHeight: '64px' }}>
+      <AppBar color="primary" position="static">
+        <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Flashcard SaaS
           </Typography>
-          <Box sx={{
-            position: 'absolute',
-            right: 0,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <SignedOut>
-              <Button sx={{ color: 'white', border: '1px solid white' }} href='/sign-in'>Log in</Button>
-              <Button sx={{ color: 'white', border: '1px solid white' }} href='/sign-up'>Sign Up</Button>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </Box>
+          <SignedOut>
+            <Button color="inherit" href="/sign-in">
+              Log In
+            </Button>
+            <Button color="inherit" href="/sign-up">
+              Sign Up
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </Toolbar>
       </AppBar>
 
-      <Box sx={{
-        textAlign: 'center',
-        my: 4,
-      }}>
-        <Typography variant="h2">Welcome to Flashcards SaaS</Typography>
-        <Typography variant="h5">
-          The easiest way to make flashcards from your text
+      <Box
+        sx={{
+          textAlign: 'center',
+          my: 4,
+        }}
+      >
+        <Typography variant="h2" gutterBottom>Welcome to Flashcard SaaS!</Typography>
+        <Typography variant="h5" gutterBottom>
+          The easiest way to make flashcards from your text!
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+        <Button onClick={getStarted} variant="contained" color="primary" sx={{ mt: 2 }}>
           Get Started
         </Button>
       </Box>
-      <Box sx = {{my: 6}}>
-        <Typography variant="h4">Features</Typography>
+      <Box sx={{ my: 6 }}>
+        <Typography textAlign="center" variant="h4" gutterBottom>Features</Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6">Easy Text Input</Typography>
+            <Typography variant="h6" gutterBottom>Easy Text Input</Typography>
             <Typography>
-              {' '}
-              Simply Put your text and let our software do the rest. Creating 
-              Flashcards has never been easier</Typography>
+              Simply input your text and let our software do the rest. Creating flashcards has never been easier.
+            </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6">Smart Flashcards</Typography>
+            <Typography variant="h6" gutterBottom>Smart Flashcards</Typography>
             <Typography>
-              {' '}
-              Our Ai intelligently breaks down your text into flashcards for studying</Typography>
+              Our AI intelligently breaks down your text into concise flashcards, perfect for studying.
+            </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6">Accessible Anywhere</Typography>
+            <Typography variant="h6" gutterBottom>Accessible Anywhere</Typography>
             <Typography>
-              {' '}
-              Study on the go anywhere!</Typography>
+              Access your flashcards from any device, at any time. Study on the go with ease.
+            </Typography>
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{my: 6, textAlign: 'center',}}>
-        <Typography variant="h4" gutterBottom={2}>Pricing</Typography>
+      <Box sx={{ my: 6, textAlign: 'center' }}>
+        <Typography variant="h4" gutterBottom>Pricing</Typography>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}> 
+          <Grid item xs={12} md={6}>
             <Box sx={{
               p: 3,
-              border: '1px solid',
-              borderColor: 'grey.300',
+              border: '2px solid',
+              borderColor: 'primary.main',
               borderRadius: 2,
-            }}>
-            <Typography variant="h5">Basic</Typography>
-            <Typography variant="h6">$5 / Month</Typography>
-            <Typography>
-              {' '}
-              Access to our basic model and flashcard Generator</Typography>
-            </Box>  
+            }}
+            >
+              <Typography variant="h5" gutterBottom>Basic</Typography>
+              <Typography variant="h6" gutterBottom>$5 / month</Typography>
+              <Typography>
+                Access to basic flashcard features and limited storage.
+              </Typography>
+              <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleSubmitBasic}>Choose Basic</Button>
+            </Box>
           </Grid>
           <Grid item xs={12} md={6}>
-          <Box sx={{
+            <Box sx={{
               p: 3,
-              border: '1px solid',
-              borderColor: 'grey.300',
+              border: '2px solid',
+              borderColor: 'primary.main',
               borderRadius: 2,
-            }}>
-            <Typography variant="h5">Pro</Typography>
-            <Typography variant="h6">$10 / Month</Typography>
-            <Typography>
-              {' '}
-              Access to our premium features and services</Typography>
+            }}
+            >
+              <Typography variant="h5" gutterBottom>Pro</Typography>
+              <Typography variant="h6" gutterBottom>$10 / month</Typography>
+              <Typography>
+                Unlimited flashcards and storage, with priority support.
+              </Typography>
+              <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleSubmitPro}>Choose Pro</Button>
             </Box>
           </Grid>
         </Grid>
       </Box>
     </Container>
-  );
+  )
 }
-
-

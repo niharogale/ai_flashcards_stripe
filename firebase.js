@@ -21,14 +21,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
 
-// Initialize Analytics only on the client side
-let analytics;
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-    }
-  });
-}
-
-export {db, analytics}
+export {db}
