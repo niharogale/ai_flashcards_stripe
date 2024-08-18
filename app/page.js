@@ -1,19 +1,21 @@
 'use client'
 import Image from 'next/image'
 import getStripe from '@/utils/get-stripe'
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs'
 import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from '@mui/material'
 import Head from 'next/head'
 import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const router = useRouter()
+  const {isLoaded, isSignedIn, user} = useUser()
 
   const handleSubmitPro = async () => {
     const checkoutSession = await fetch('/api/checkout_session', {
       method: 'POST',
       headers: {
-        origin: 'https://localhost:3000'
+        origin: 'https://localhost:3000',
+        plan: "pro",
       },
     })
 
@@ -61,19 +63,24 @@ export default function Home() {
   }
 
   const getStarted = async () => {
-    router.push('/generate')
+    if(!user || !user.id) {
+      alert('User is not signed in or user Id is not available')
+      return
+    } else {
+      router.push('/generate')
+    }
   }
 
   return (
     <Container maxWidth="100vw" id="home-root">
       <Head>
-        <title>Flashcard SaaS</title>
+        <title>Smart Cards</title>
         <meta name="description" content="Create flashcards from your text" />
       </Head>
       <AppBar color="primary" position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Flashcard SaaS
+            Smart Cards
           </Typography>
           <SignedOut>
             <Button color="inherit" href="/sign-in">
@@ -95,7 +102,7 @@ export default function Home() {
           my: 4,
         }}
       >
-        <Typography variant="h2" gutterBottom>Welcome to Flashcard SaaS!</Typography>
+        <Typography variant="h2" gutterBottom>Welcome to Smart Cards!</Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text!
         </Typography>
