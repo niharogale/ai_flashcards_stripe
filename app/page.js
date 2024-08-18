@@ -143,8 +143,13 @@ export default function Home() {
 
       <Box
         sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',  // Center vertically
+          alignItems: 'center',       // Center horizontally
           textAlign: 'center',
           mb: 6,
+          height: '40vh',
         }}
       >
         <Typography variant="h2" gutterBottom>Welcome to Smart Cards!</Typography>

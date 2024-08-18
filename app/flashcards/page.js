@@ -1,5 +1,5 @@
 'use client'
-import { useUser } from "@clerk/nextjs"
+import { useUser, SignedIn, UserButton } from "@clerk/nextjs"
 import { use, useEffect, useState } from "react"
 
 import { collection, CollectionReference, doc, getDoc, setDoc } from "firebase/firestore"
@@ -87,9 +87,9 @@ export default function Flashcards() {
             <Button color="inherit" onClick={() => handleNavigation('/generate')}>Generate</Button>
             <Button color="inherit" onClick={() => handleNavigation('/flashcards')}>Flashcards</Button>
           </Box>
-          <Typography>
-            {user.fullName}
-          </Typography>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </Toolbar>
         </AppBar>
         <Grid container spacing={3} sx={{
