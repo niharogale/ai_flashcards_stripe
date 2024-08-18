@@ -1,8 +1,8 @@
 'use client'
 
 import { db } from "@/firebase"
-import { useUser } from "@clerk/nextjs"
-import { Container, Box, Typography, Paper, TextField, Button, Grid, Card, CardActionArea, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material"
+import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
+import { Container, Box, Typography, Paper, TextField, Button, Grid, Card, CardActionArea, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, AppBar, Toolbar } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
@@ -80,12 +80,30 @@ export default function generate() {
     }
 
     return <Container maxWidth="md">
+        <AppBar color="primary" position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Smart Cards
+          </Typography>
+          <SignedOut>
+            <Button color="inherit" href="/sign-in">
+              Log In
+            </Button>
+            <Button color="inherit" href="/sign-up">
+              Sign Up
+            </Button>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </Toolbar>
+        </AppBar>
         <Box sx={{
             mt: 4, mb: 6, display: 'flex', flexDirection: 'column', alignItems: 'center'
         }}>
             <Typography variant="h4">Generate Flashcards</Typography>
             <Paper sx={{p: 4, width: '100%'}}>
-                <TextField value={text} onChange={(e) => setText(e.target.value)} label = "Enter Text" fullWidth multiline rows={4} variant="outlined" sx={{mb: 2,}}/>
+                <TextField value={text} onChange={(e) => setText(e.target.value)} label = "Example: Planets Flashcards" fullWidth multiline rows={4} variant="outlined" sx={{mb: 2,}}/>
                 <Button variant='contained' color="primary" onClick={handleSubmit} fullWidth>Submit</Button>
             </Paper>
         </Box>

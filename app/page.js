@@ -2,13 +2,24 @@
 import Image from 'next/image'
 import getStripe from '@/utils/get-stripe'
 import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs'
-import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from '@mui/material'
+import { MenuItem, Menu, AppBar, Box, Button, Container, Grid, Toolbar, Typography, IconButton } from '@mui/material'
 import Head from 'next/head'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import MenuIcon from '@mui/icons-material/Menu'
 
 export default function Home() {
   const router = useRouter()
+  const [anchorEl, setAnchorEl] = useState(null)
   const {isLoaded, isSignedIn, user} = useUser()
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
 
   const handleSubmitPro = async () => {
     const checkoutSession = await fetch('/api/checkout_session', {
@@ -71,6 +82,15 @@ export default function Home() {
     }
   }
 
+  const getFlashcards = async () => {
+    if(!user || !user.id) {
+      alert('User is not signed in or user Id is not available')
+      return
+    } else {
+      router.push('/flashcards')
+    }
+  }
+
   return (
     <Container maxWidth="100vw" id="home-root">
       <Head>
@@ -82,14 +102,35 @@ export default function Home() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Smart Cards
           </Typography>
-          <SignedOut>
-            <Button color="inherit" href="/sign-in">
-              Log In
-            </Button>
-            <Button color="inherit" href="/sign-up">
-              Sign Up
-            </Button>
-          </SignedOut>
+
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMenuOpen}
+            sx={{ display: { xs: 'block', md: 'none' } }} // Show only on small screens
+          >
+            <MenuIcon />
+          </IconButton>
+
+          {/* Dropdown Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            sx={{ display: 'block' }} // Show only on small screens
+          >
+            <MenuItem>
+              Home
+            </MenuItem>
+            <MenuItem onClick={getStarted}>
+              Generate
+            </MenuItem>
+            <MenuItem onClick={getFlashcards}>
+              Flashcards
+            </MenuItem>
+          </Menu>
+
           <SignedIn>
             <UserButton />
           </SignedIn>
