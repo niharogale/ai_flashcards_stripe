@@ -5,9 +5,11 @@ import { use, useEffect, useState } from "react"
 import { collection, CollectionReference, doc, getDoc, setDoc } from "firebase/firestore"
 import { db } from "@/firebase"
 import { useRouter } from "next/navigation"
-import { Card, CardActionArea, CardContent, Container, Grid, Typography } from "@mui/material"
+import { Box, Button, AppBar, Toolbar, Menu, MenuItem, IconButton, Card, CardActionArea, CardContent, Container, Grid, Typography } from "@mui/material"
+import MenuIcon from '@mui/icons-material/Menu'
 
 export default function Flashcards() {
+    const [anchorEl, setAnchorEl] = useState(null)
     const {isLoaded, isSignedIn, user} = useUser()
     const [flashcards, setFlashcards] = useState([])
     const router = useRouter()
@@ -35,7 +37,61 @@ export default function Flashcards() {
         router.push(`flashcard?id=${id}`)
     }
 
+    const handleNavigation = async (route) => {
+        if(!user || !user.id) {
+          alert('User is not signed in or user Id is not available')
+          return
+        } else {
+          router.push(route)
+        }
+      }
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget)
+      }
+    
+      const handleMenuClose = () => {
+        setAnchorEl(null)
+      }
+
     return <Container maxWidth="100vw">
+        <AppBar color="primary" position="static" sx={{ mb: 4 }}>
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Smart Cards
+          </Typography>
+
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMenuOpen}
+            sx={{ display: { xs: 'block', md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            sx={{ display: { xs: 'block', md: 'none' } }}
+          >
+            <MenuItem onClick={() => handleNavigation('/')}>Home</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/generate')}>Generate</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/flashcards')}>Flashcards</MenuItem>
+          </Menu>
+
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+            <Button color="inherit" onClick={() => handleNavigation('/')}>Home</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/generate')}>Generate</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/flashcards')}>Flashcards</Button>
+          </Box>
+          <Typography>
+            {user.fullName}
+          </Typography>
+        </Toolbar>
+        </AppBar>
         <Grid container spacing={3} sx={{
             mt: 4,
         }}>

@@ -2,19 +2,38 @@
 
 import { db } from "@/firebase"
 import { useUser, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
-import { Container, Box, Typography, Paper, TextField, Button, Grid, Card, CardActionArea, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, AppBar, Toolbar } from "@mui/material"
+import { Menu, MenuItem, IconButton, Container, Box, Typography, Paper, TextField, Button, Grid, Card, CardActionArea, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, AppBar, Toolbar } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
+import MenuIcon from '@mui/icons-material/Menu'
 
 export default function generate() {
     const {isLoaded, isSignedIn, user} = useUser()
+    const [anchorEl, setAnchorEl] = useState(null)
     const [flashcards, setFlashcards] = useState([])
     const [flipped, setFlipped] = useState([])
     const [text, setText] = useState('')
     const [name, setName] = useState('')
     const [open, setOpen] = useState(false)
     const router = useRouter()
+
+    const handleNavigation = async (route) => {
+        if(!user || !user.id) {
+          alert('User is not signed in or user Id is not available')
+          return
+        } else {
+          router.push(route)
+        }
+      }
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget)
+      }
+    
+      const handleMenuClose = () => {
+        setAnchorEl(null)
+      }
 
     const handleSubmit=async ()=> {
         fetch('api/generate', {
@@ -80,19 +99,38 @@ export default function generate() {
     }
 
     return <Container maxWidth="md">
-        <AppBar color="primary" position="static">
+        <AppBar color="primary" position="static" sx={{ mb: 4 }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Smart Cards
           </Typography>
-          <SignedOut>
-            <Button color="inherit" href="/sign-in">
-              Log In
-            </Button>
-            <Button color="inherit" href="/sign-up">
-              Sign Up
-            </Button>
-          </SignedOut>
+
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMenuOpen}
+            sx={{ display: { xs: 'block', md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            sx={{ display: { xs: 'block', md: 'none' } }}
+          >
+            <MenuItem onClick={() => handleNavigation('/')}>Home</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/generate')}>Generate</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/flashcards')}>Flashcards</MenuItem>
+          </Menu>
+
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+            <Button color="inherit" onClick={() => handleNavigation('/')}>Home</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/generate')}>Generate</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/flashcards')}>Flashcards</Button>
+          </Box>
           <SignedIn>
             <UserButton />
           </SignedIn>

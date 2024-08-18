@@ -7,6 +7,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
+import Link from 'next/link'
 
 export default function Home() {
   const router = useRouter()
@@ -73,31 +74,23 @@ export default function Home() {
     }
   }
 
-  const getStarted = async () => {
+  const handleNavigation = async (route) => {
     if(!user || !user.id) {
       alert('User is not signed in or user Id is not available')
       return
     } else {
-      router.push('/generate')
-    }
-  }
-
-  const getFlashcards = async () => {
-    if(!user || !user.id) {
-      alert('User is not signed in or user Id is not available')
-      return
-    } else {
-      router.push('/flashcards')
+      router.push(route)
     }
   }
 
   return (
-    <Container maxWidth="100vw" id="home-root">
+    <Container maxWidth="100vw" id="home-root" sx={{ p: { xs: 2, md: 4 }, backgroundColor: '#f5f5f5' }}>
       <Head>
         <title>Smart Cards</title>
         <meta name="description" content="Create flashcards from your text" />
       </Head>
-      <AppBar color="primary" position="static">
+
+      <AppBar color="primary" position="static" sx={{ mb: 4 }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Smart Cards
@@ -108,29 +101,40 @@ export default function Home() {
             color="inherit"
             aria-label="menu"
             onClick={handleMenuOpen}
-            sx={{ display: { xs: 'block', md: 'none' } }} // Show only on small screens
+            sx={{ display: { xs: 'block', md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
 
-          {/* Dropdown Menu */}
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
-            sx={{ display: 'block' }} // Show only on small screens
+            sx={{ display: { xs: 'block', md: 'none' } }}
           >
-            <MenuItem>
-              Home
-            </MenuItem>
-            <MenuItem onClick={getStarted}>
-              Generate
-            </MenuItem>
-            <MenuItem onClick={getFlashcards}>
-              Flashcards
-            </MenuItem>
+            <MenuItem onClick={() => handleNavigation('/')}>Home</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/generate')}>Generate</MenuItem>
+            <MenuItem onClick={() => handleNavigation('/flashcards')}>Flashcards</MenuItem>
           </Menu>
 
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+            <Button color="inherit" onClick={() => handleNavigation('/')}>Home</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/generate')}>Generate</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/flashcards')}>Flashcards</Button>
+          </Box>
+
+          <SignedOut>
+            <Button color='inherit'>
+              <Link href="/sign-in" passHref>
+                Login
+              </Link>
+            </Button>
+            <Button color='inherit'>
+              <Link href="/sign-up" passHref>
+                Sign Up
+              </Link>
+            </Button>
+          </SignedOut>
           <SignedIn>
             <UserButton />
           </SignedIn>
@@ -140,73 +144,87 @@ export default function Home() {
       <Box
         sx={{
           textAlign: 'center',
-          my: 4,
+          mb: 6,
         }}
       >
         <Typography variant="h2" gutterBottom>Welcome to Smart Cards!</Typography>
         <Typography variant="h5" gutterBottom>
           The easiest way to make flashcards from your text!
         </Typography>
-        <Button onClick={getStarted} variant="contained" color="primary" sx={{ mt: 2 }}>
+        <Button onClick={() => handleNavigation('/generate')} variant="contained" color="primary" sx={{ mt: 2, px: 4, py: 1.5, fontSize: '1rem' }}>
           Get Started
         </Button>
       </Box>
-      <Box sx={{ my: 6 }}>
+      
+      <Box sx={{ mb: 8 }}>
         <Typography textAlign="center" variant="h4" gutterBottom>Features</Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>Easy Text Input</Typography>
-            <Typography>
-              Simply input your text and let our software do the rest. Creating flashcards has never been easier.
-            </Typography>
+            <Box sx={{ p: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 3 }}>
+              <Typography variant="h6" gutterBottom>Easy Text Input</Typography>
+              <Typography>
+                Simply input your text and let our software do the rest. Creating flashcards has never been easier.
+              </Typography>
+            </Box>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>Smart Flashcards</Typography>
-            <Typography>
-              Our AI intelligently breaks down your text into concise flashcards, perfect for studying.
-            </Typography>
+            <Box sx={{ p: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 3 }}>
+              <Typography variant="h6" gutterBottom>Smart Flashcards</Typography>
+              <Typography>
+                Our AI intelligently breaks down your text into concise flashcards, perfect for studying.
+              </Typography>
+            </Box>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>Accessible Anywhere</Typography>
-            <Typography>
-              Access your flashcards from any device, at any time. Study on the go with ease.
-            </Typography>
+            <Box sx={{ p: 3, backgroundColor: '#fff', borderRadius: 2, boxShadow: 3 }}>
+              <Typography variant="h6" gutterBottom>Accessible Anywhere</Typography>
+              <Typography>
+                Access your flashcards from any device, at any time. Study on the go with ease.
+              </Typography>
+            </Box>
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ my: 6, textAlign: 'center' }}>
+      
+      <Box sx={{ mb: 6, textAlign: 'center' }}>
         <Typography variant="h4" gutterBottom>Pricing</Typography>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Box sx={{
-              p: 3,
+              p: 4,
               border: '2px solid',
               borderColor: 'primary.main',
               borderRadius: 2,
-            }}
-            >
+              backgroundColor: '#fff',
+              boxShadow: 3,
+            }}>
               <Typography variant="h5" gutterBottom>Basic</Typography>
-              <Typography variant="h6" gutterBottom>$5 / month</Typography>
-              <Typography>
+              <Typography variant="h6" color="text.secondary">$5 / month</Typography>
+              <Typography sx={{ mt: 2 }}>
                 Access to basic flashcard features and limited storage.
               </Typography>
-              <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleSubmitBasic}>Choose Basic</Button>
+              <Button variant="contained" color="primary" sx={{ mt: 4, px: 4, py: 1.5, fontSize: '1rem' }} onClick={handleSubmitBasic}>
+                Choose Basic
+              </Button>
             </Box>
           </Grid>
           <Grid item xs={12} md={6}>
             <Box sx={{
-              p: 3,
+              p: 4,
               border: '2px solid',
               borderColor: 'primary.main',
               borderRadius: 2,
-            }}
-            >
+              backgroundColor: '#fff',
+              boxShadow: 3,
+            }}>
               <Typography variant="h5" gutterBottom>Pro</Typography>
-              <Typography variant="h6" gutterBottom>$10 / month</Typography>
-              <Typography>
+              <Typography variant="h6" color="text.secondary">$10 / month</Typography>
+              <Typography sx={{ mt: 2 }}>
                 Unlimited flashcards and storage, with priority support.
               </Typography>
-              <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleSubmitPro}>Choose Pro</Button>
+              <Button variant="contained" color="primary" sx={{ mt: 4, px: 4, py: 1.5, fontSize: '1rem' }} onClick={handleSubmitPro}>
+                Choose Pro
+              </Button>
             </Box>
           </Grid>
         </Grid>
