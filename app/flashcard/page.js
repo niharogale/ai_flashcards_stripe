@@ -9,7 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { useSearchParams } from "next/navigation"
 import { AppBar, Toolbar, Menu, MenuItem, IconButton,Container, Box, Typography, Paper, TextField, Button, Grid, Card, CardActionArea, CardContent, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material"
 
-export default function flashcard() {
+export default function Flashcard() {
     const router = useRouter()
     const [anchorEl, setAnchorEl] = useState(null)
     const {isLoaded, isSignedIn, user} = useUser()

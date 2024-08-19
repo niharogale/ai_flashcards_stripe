@@ -8,7 +8,7 @@ import { useState } from "react"
 import { doc, collection, setDoc, getDoc, writeBatch } from "firebase/firestore"
 import MenuIcon from '@mui/icons-material/Menu'
 
-export default function generate() {
+export default function Generate() {
     const {isLoaded, isSignedIn, user} = useUser()
     const [anchorEl, setAnchorEl] = useState(null)
     const [flashcards, setFlashcards] = useState([])
